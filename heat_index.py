@@ -1,17 +1,11 @@
-##########################################################################
-# Filename    : dht11.py
-# Description : test for SunFoudner DHT11 humiture & temperature module
-# Author      : Alan
-# Website     : www.osoyoo.com
-# Update      : 2017/07/06
-##########################################################################
 import RPi.GPIO as GPIO
 import time
 
 #DHT11 connect to BCM_GPIO14
 DHTPIN = 14
-
-GPIO.setmode(GPIO.BCM)
+GREENPIN = 22
+YELLOPIN = 17
+REDPIN = 4
 
 MAX_UNCHANGE_COUNT = 100
 
@@ -114,14 +108,59 @@ def read_dht11_dat():
 
     return the_bytes[0], the_bytes[2]
 
+#setup function for some setup---custom function
+def setup():
+    GPIO.setwarnings(False)
+    #set the gpio modes to BCM numbering
+    GPIO.setmode(GPIO.BCM)
+    #set LEDPIN's mode to output,and initial level to LOW(0V)
+    GPIO.setup(GREENPIN,GPIO.OUT,initial=GPIO.LOW)
+    GPIO.setup(YELLOPIN,GPIO.OUT,initial=GPIO.LOW)
+    GPIO.setup(REDPIN,GPIO.OUT,initial=GPIO.LOW)
+
+# DHTPIN = 14
+# GREENPIN = 22
+# YELLOPIN = 17
+# REDPIN = 4
+
 def main():
-    print "Raspberry Pi wiringPi DHT11 Temperature test program\n"
+    setup()
     while True:
         result = read_dht11_dat()
-        if result:
+        if result: #resultがtrueなら
             humidity, temperature = result
             print "humidity: %s %%,  Temperature: %s C" % (humidity, temperature)
+
+            heatindex = 0.81*temperature+0.01humidity*(0.99*temperature-14.3)+46.3
+            print('heatindex: ' + str(heatindex) )
+
+            if heatindex < 75:
+                #GREENPIN
+                GPIO.output(GREENPIN ,GPIO.HIGH)
+                GPIO.output(YELLOPIN ,GPIO.LOW)
+                GPIO.output(REDPIN ,GPIO.LOW)
+            elif heatindex < 80:
+                #YELLOPIN
+                GPIO.output(GREENPIN ,GPIO.LOW)
+                GPIO.output(YELLOPIN ,GPIO.HIGH)
+                GPIO.output(REDPIN ,GPIO.LOW)
+            else:
+                #RED
+                GPIO.output(GREENPIN ,GPIO.LOW)
+                GPIO.output(YELLOPIN ,GPIO.LOW)
+                GPIO.output(REDPIN ,GPIO.HIGH)
         time.sleep(1)
+
+# while True:
+#    GPIO.output(LEDPIN,GPIO.HIGH)
+#    print('...LED ON\n')
+#    time.sleep(0.5)
+#
+#    GPIO.output(LEDPIN,GPIO.LOW)
+#    print('LED OFF...\n')
+#    time.sleep(0.5)
+#    pass
+# pass
 
 def destroy():
     GPIO.cleanup()
