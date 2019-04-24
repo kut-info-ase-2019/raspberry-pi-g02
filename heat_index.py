@@ -22,20 +22,19 @@ def read_dht11_dat():
     GPIO.output(DHTPIN, GPIO.LOW)
     time.sleep(0.02)
     GPIO.setup(DHTPIN, GPIO.IN, GPIO.PUD_UP)
-    # GPIO.IN 入力に設定します。 #GPIO.PUD_UPプロアップ抵抗
 
     unchanged_count = 0
     last = -1
     data = []
-    while True: #変化がなくなるまでループ
+    while True:
         current = GPIO.input(DHTPIN)
         data.append(current)
-        if last != current: #変化があったら
+        if last != current:
             unchanged_count = 0
             last = current
-        else:#変化がなかったら
+        else:
             unchanged_count += 1
-            if unchanged_count > MAX_UNCHANGE_COUNT: #基準回反応なかったらbreak
+            if unchanged_count > MAX_UNCHANGE_COUNT:
                 break
 
     state = STATE_INIT_PULL_DOWN
