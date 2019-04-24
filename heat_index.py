@@ -125,11 +125,11 @@ def main():
     setup()
     while True:
         result = read_dht11_dat()
-        if result: 
+        if result:
             humidity, temperature = result
             print "humidity: %s %%,  Temperature: %s C" % (humidity, temperature)
 
-            heatindex = 0.81*temperature+0.01humidity*(0.99*temperature-14.3)+46.3
+            heatindex = 0.81*temperature+0.01*humidity*(0.99*temperature-14.3)+46.3
             print('heatindex: ' + str(heatindex) )
 
             if heatindex < 75:
