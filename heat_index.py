@@ -125,7 +125,7 @@ def main():
     setup()
     while True:
         result = read_dht11_dat()
-        if result: #resultがtrueなら
+        if result: 
             humidity, temperature = result
             print "humidity: %s %%,  Temperature: %s C" % (humidity, temperature)
 
